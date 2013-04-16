@@ -46,6 +46,7 @@
   amount of threads).
  */
 
+#include <assert.h>
 #include <gst/gst.h>
 #include <glib.h>
 #include <string.h>
@@ -57,13 +58,9 @@ struct NextStreamData {
 
 static void prepare_next_stream(GstElement *obj, gpointer userdata) {
 	struct NextStreamData *data = (struct NextStreamData*) userdata;
-	if (data->next_uri) {
-		g_print("about-to-finish; setting next to %s\n", data->next_uri);
-		g_object_set(G_OBJECT(data->pipeline), "uri", data->next_uri,
-			     NULL);
-	} else {
-		g_print("about-to-finish callback; no next uri available.\n");
-	}
+	assert(data->next_uri);
+	g_print("about-to-finish; setting next to %s\n", data->next_uri);
+	g_object_set(G_OBJECT(data->pipeline), "uri", data->next_uri, NULL);
 }
 
 int main (int argc, char *argv[]) {
