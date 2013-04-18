@@ -58,6 +58,6 @@ Same thing works fine with both versions, if the input is a file
 Version
 -------
 Tested on Ubuntu 12.04/precise. The 0.10 gstreamer version comes natively
-with that Ubuntu version, the 1.0 version from
+with that Ubuntu version, the 1.0.6 version from
 
     deb http://ppa.launchpad.net/gstreamer-developers/ppa/ubuntu precise main
