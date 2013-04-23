@@ -1,3 +1,6 @@
+Code to reproduce
+ https://bugzilla.gnome.org/show_bug.cgi?id=698306
+
  This is to investigate various odd behavior of gapless play with URIs.
   - gstreamer-0.1: runs out of threads on gapless playing URIs
   - gstreamer-1.0: does not handle well having the URI set in about-to-finish
