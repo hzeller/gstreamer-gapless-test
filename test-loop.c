@@ -2,10 +2,15 @@
   Source including Makefile and test sound file on:
   https://github.com/hzeller/gstreamer-gapless-test
 
- This is to investigate various odd behavior of gapless play with URIs.
-  - gstreamer-0.1: runs out of threads on gapless playing URIs
-  - gstreamer-1.0: does not handle well having the URI set in about-to-finish
-                   callback.
+  This is to investigate various odd behavior of gapless play with URIs with
+  different versions of gstreamer. The relevant bugs are:
+
+  - gstreamer-0.1: "playbin2" leaks threads playing gapless from network URIs
+       https://bugzilla.gnome.org/show_bug.cgi?id=698750
+
+  - gstreamer-1.0: Gapless playing using 'about-to-finish' callback fails
+                   with HTTP-URIs
+        https://bugzilla.gnome.org/show_bug.cgi?id=698306
 
  To reproduce:
 
