@@ -61,14 +61,17 @@
 
 struct NextStreamData {
 	GstElement *pipeline;
+	int count;
 	const char *next_uri;
 };
 
 static void prepare_next_stream(GstElement *obj, gpointer userdata) {
 	struct NextStreamData *data = (struct NextStreamData*) userdata;
 	assert(data->next_uri);
-	g_print("about-to-finish; setting next to %s\n", data->next_uri);
+	g_print("about-to-finish %4d; setting next to %s\n",
+		data->count, data->next_uri);
 	g_object_set(G_OBJECT(data->pipeline), "uri", data->next_uri, NULL);
+	data->count++;
 }
 
 int main (int argc, char *argv[]) {
@@ -96,6 +99,7 @@ int main (int argc, char *argv[]) {
 	/* Register about-to-finish callback to re-set the URI */
 	struct NextStreamData replay_data;
 	replay_data.pipeline = pipeline;
+	replay_data.count = 0;
 	replay_data.next_uri = argv[1];   // let's loop forever the same URI
 	g_signal_connect(pipeline, "about-to-finish",
 		G_CALLBACK(prepare_next_stream), &replay_data);
