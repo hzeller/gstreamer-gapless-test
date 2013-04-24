@@ -32,7 +32,7 @@
  Run the binary
  ./test-loop-0.1 http://localhost:9999/test-sound.ogg
 
- In another thread, watch how the number of threads increase over time
+ In another shell, watch how the number of threads increase over time
 
  $ while : ; do ps -eLf | grep test-loop | grep -v grep | wc -l ; sleep 1 ; done
 
