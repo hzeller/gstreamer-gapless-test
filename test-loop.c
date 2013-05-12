@@ -50,15 +50,16 @@
 struct NextStreamData {
 	GstElement *pipeline;
 	int count;
-	const char *next_uri;
+	int uri_count;
+	char **uris;
 };
 
 static void prepare_next_stream(GstElement *obj, gpointer userdata) {
 	struct NextStreamData *data = (struct NextStreamData*) userdata;
-	assert(data->next_uri);
+	const char* next_uri = data->uris[MIN(data->count+1, data->uri_count)];
 	g_print("about-to-finish %4d; setting next to %s\n",
-		data->count, data->next_uri);
-	g_object_set(G_OBJECT(data->pipeline), "uri", data->next_uri, NULL);
+		data->count, next_uri);
+	g_object_set(G_OBJECT(data->pipeline), "uri", next_uri, NULL);
 	data->count++;
 }
 
@@ -72,8 +73,9 @@ int main (int argc, char *argv[]) {
 	loop = g_main_loop_new (NULL, FALSE);
 
 	/* Check input arguments */
-	if (argc != 2) {
-		g_printerr ("Usage: %s <filename or URL>\n", argv[0]);
+	if (argc < 2) {
+		g_printerr ("Usage: %s <list of space-delimited filenames or URLs>\n",
+			argv[0]);
 		return -1;
 	}
 
@@ -89,7 +91,8 @@ int main (int argc, char *argv[]) {
 	struct NextStreamData replay_data;
 	replay_data.pipeline = pipeline;
 	replay_data.count = 0;
-	replay_data.next_uri = argv[1];   // let's loop forever the same URI
+	replay_data.uris = &(argv[1]);
+	replay_data.uri_count = argc-2;
 	g_signal_connect(pipeline, "about-to-finish",
 		G_CALLBACK(prepare_next_stream), &replay_data);
 
