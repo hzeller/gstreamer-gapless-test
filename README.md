@@ -1,64 +1,49 @@
-This is to investigate various odd behavior of gapless play with URIs with
-different versions of gstreamer. The relevant bugs are
+  Source including Makefile and test sound file on:
+  https://github.com/hzeller/gstreamer-gapless-test
 
-  - gstreamer-0.1: "playbin2" leaks threads playing gapless from network URIs
-       https://bugzilla.gnome.org/show_bug.cgi?id=698750
+  This is to investigate a race condition while doing HTTP streaming that
+  prevents "about-to-finish" to work.
 
-  - gstreamer-1.0: Gapless playing using 'about-to-finish' callback fails
-                   with HTTP-URIs
-        https://bugzilla.gnome.org/show_bug.cgi?id=698306
+  Relevant bug:
+   playbin: gapless playback using "about-to-finish" doesn't work with http URIs
+   https://bugzilla.gnome.org/show_bug.cgi?id=698750
 
-To reproduce:
+ To reproduce:
 
-Build both both versions with
+ Build both both versions with
 
-     make
+ make
 
-(This expects pkg-config to work for gstreamer-0.10 and gstreamer-1.0)
+ (This expects pkg-config to work for gstreamer-0.10 and gstreamer-1.0)
 
 Preparation: provide sound-file via webserver
-----------------------------------------------
+---------------------------------------------
 
-Run a webserver that serves the test sound file.
+ Run a webserver that serves the test sound file.
 
-Webfsd is a lightweight solution (sudo aptitude install webfs). There
-is a file in the sounds/ directory, let's serve that.
+ Webfsd is a lightweight solution (sudo aptitude install webfs). There
+ is a file in the sounds/ directory, let's serve that.
 
-     webfsd -r sounds/ -p 9999
-
-Playing URI with gstreamer 0.10
--------------------------------
-
- Run the binary
-
-     ./test-loop-0.1 http://localhost:9999/test-sound.ogg
-
-In another shell, watch how the number of threads increase over time
-
-     $ while : ; do ps -eLf | grep test-loop | grep -v grep | wc -l ; sleep 1 ; done
-
-.. and after some amount of repeats (~30-100) the whole process just stops
-working, with many threads stuck.
+ webfsd -r sounds/ -p 9999
 
 Playing URI with gstreamer 1.0
 ------------------------------
 
-Running the 1.0 binary:
+ ./test-loop-1.0 http://localhost:9999/test-sound.ogg
 
-     ./test-loop-1.0 http://localhost:9999/test-sound.ogg
+ This only plays the URI once and then goes into an endless loop.
 
-This only plays the URI once and then goes into an endless loop.
+Comparison: this works with gstreamer 0.10
+------------------------------------------
+ Run the binary
+ ./test-loop-0.1 http://localhost:9999/test-sound.ogg
 
-Playing a file-uri works fine
------------------------------
+Playing a file-uri
+------------------
+ Same thing works fine with both versions, if the input is a file
 
-Same thing works fine with both versions, if the input is a file
-
-     ./test-loop-0.1 file://`pwd`/sounds/test-sound.ogg
-     ./test-loop-1.0 file://`pwd`/sounds/test-sound.ogg
-
-(works means: plays the same sound indefinetly, and only uses a limited
- amount of threads).
+ ./test-loop-0.1 file://`pwd`/sounds/test-sound.ogg
+ ./test-loop-1.0 file://`pwd`/sounds/test-sound.ogg
 
 Version
 -------

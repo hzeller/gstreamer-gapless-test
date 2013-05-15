@@ -2,15 +2,12 @@
   Source including Makefile and test sound file on:
   https://github.com/hzeller/gstreamer-gapless-test
 
-  This is to investigate various odd behavior of gapless play with URIs with
-  different versions of gstreamer. The relevant bugs are:
+  This is to investigate a race condition while doing HTTP streaming that
+  prevents "about-to-finish" to work.
 
-  - gstreamer-0.1: "playbin2" leaks threads playing gapless from network URIs
-       https://bugzilla.gnome.org/show_bug.cgi?id=698750
-
-  - gstreamer-1.0: Gapless playing using 'about-to-finish' callback fails
-                   with HTTP-URIs
-        https://bugzilla.gnome.org/show_bug.cgi?id=698306
+  Relevant bug:
+   playbin: gapless playback using "about-to-finish" doesn't work with http URIs
+   https://bugzilla.gnome.org/show_bug.cgi?id=698750
 
  To reproduce:
 
@@ -28,21 +25,14 @@
 
  webfsd -r sounds/ -p 9999
 
- == Playing URI with gstreamer 0.10 ==
- Run the binary
- ./test-loop-0.1 http://localhost:9999/test-sound.ogg
-
- In another shell, watch how the number of threads increase over time
-
- $ while : ; do ps -eLf | grep test-loop | grep -v grep | wc -l ; sleep 1 ; done
-
- .. and after some amount of repeats (~30-100) the whole process just stops
- working, with many threads stuck.
-
  == Playing URI with gstreamer 1.0 ==
  ./test-loop-1.0 http://localhost:9999/test-sound.ogg
 
  This only plays the URI once and then goes into an endless loop.
+
+ == Comparison: this works with gstreamer 0.10 ==
+ Run the binary
+ ./test-loop-0.1 http://localhost:9999/test-sound.ogg
 
  == Playing a file-uri ==
  Same thing works fine with both versions, if the input is a file
@@ -50,8 +40,6 @@
  ./test-loop-0.1 file://`pwd`/sounds/test-sound.ogg
  ./test-loop-1.0 file://`pwd`/sounds/test-sound.ogg
 
- (works means: plays the same sound indefinetly, and only uses a limited
-  amount of threads).
  */
 
 #include <assert.h>
@@ -95,6 +83,7 @@ int main (int argc, char *argv[]) {
 #else
 	pipeline = gst_element_factory_make("playbin", "play");
 #endif
+	assert(pipeline != NULL);
 
 	/* Register about-to-finish callback to re-set the URI */
 	struct NextStreamData replay_data;
