@@ -1,45 +1,10 @@
 /*
-  Source including Makefile and test sound file on:
-  https://github.com/hzeller/gstreamer-gapless-test
-
-  This is to investigate a race condition while doing HTTP streaming that
-  prevents "about-to-finish" to work.
-
-  Relevant bug:
-   playbin: gapless playback using "about-to-finish" doesn't work with http URIs
-   https://bugzilla.gnome.org/show_bug.cgi?id=698750
-
- To reproduce:
-
- Build both both versions with
-
- make
-
- (This expects pkg-config to work for gstreamer-0.10 and gstreamer-1.0)
-
- == Preparation: provide sound-file via webserver ==
- Run a webserver that serves the test sound file.
-
- Webfsd is a lightweight solution (sudo aptitude install webfs). There
- is a file in the sounds/ directory, let's serve that.
-
- webfsd -r sounds/ -p 9999
-
- == Playing URI with gstreamer 1.0 ==
- ./test-loop-1.0 http://localhost:9999/test-sound.ogg
-
- This only plays the URI once and then goes into an endless loop.
-
- == Comparison: this works with gstreamer 0.10 ==
- Run the binary
- ./test-loop-0.1 http://localhost:9999/test-sound.ogg
-
- == Playing a file-uri ==
- Same thing works fine with both versions, if the input is a file
-
- ./test-loop-0.1 file://`pwd`/sounds/test-sound.ogg
- ./test-loop-1.0 file://`pwd`/sounds/test-sound.ogg
-
+ * Illustrating bugs
+ *  https://bugzilla.gnome.org/show_bug.cgi?id=698750
+ *  https://bugzilla.gnome.org/show_bug.cgi?id=686153
+ *
+ * For details how to run, see
+ *   https://github.com/hzeller/gstreamer-gapless-test/blob/master/README.md
  */
 
 #include <assert.h>
@@ -56,7 +21,7 @@ struct NextStreamData {
 
 static void prepare_next_stream(GstElement *obj, gpointer userdata) {
 	struct NextStreamData *data = (struct NextStreamData*) userdata;
-	const char* next_uri = data->uris[MIN(data->count+1, data->uri_count)];
+	const char* next_uri = data->uris[(data->count+1) % data->uri_count];
 	g_print("about-to-finish %4d; setting next to %s\n",
 		data->count, next_uri);
 	g_object_set(G_OBJECT(data->pipeline), "uri", next_uri, NULL);
@@ -92,7 +57,7 @@ int main (int argc, char *argv[]) {
 	replay_data.pipeline = pipeline;
 	replay_data.count = 0;
 	replay_data.uris = &(argv[1]);
-	replay_data.uri_count = argc-2;
+	replay_data.uri_count = argc - 1;
 	g_signal_connect(pipeline, "about-to-finish",
 		G_CALLBACK(prepare_next_stream), &replay_data);
 
