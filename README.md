@@ -46,22 +46,24 @@ file, and the second file somewhere starting in the middle:
  
     ./test-loop-1.0 http://localhost:9999/12.ogg http://localhost:9999/1234567.ogg
 
-This *does work with WAV* files over a HTTP URI
+This *does work with WAV or FLAC* files over a HTTP URI
 
     ./test-loop-1.0 http://localhost:9999/12.wav http://localhost:9999/1234567.wav
+    ./test-loop-1.0 http://localhost:9999/12.flac http://localhost:9999/1234567.flac
 
 ### File URI ###
 
 Unlike HTTP, with file URIs, the behavior wrt. *.wav files vs. *.ogg files
-is the opposite.
+is the opposite. FLAC files work here as well.
 
 *WAV files do not work*:
 
     ./test-loop-1.0 file://`pwd`/sounds/12.wav file://`pwd`/sounds/1234567.wav
 
-while *OGG files work*:
+while *OGG and FLAC files work*:
 
     ./test-loop-1.0 file://`pwd`/sounds/12.ogg file://`pwd`/sounds/1234567.ogg
+    ./test-loop-1.0 file://`pwd`/sounds/12.flac file://`pwd`/sounds/1234567.flac
 
 Comparison: this works with gstreamer 0.10
 ------------------------------------------
@@ -70,8 +72,10 @@ All of the examples above do work
 
     ./test-loop-0.1 http://localhost:9999/12.ogg http://localhost:9999/1234567.ogg
     ./test-loop-0.1 http://localhost:9999/12.wav http://localhost:9999/1234567.wav
+    ./test-loop-0.1 http://localhost:9999/12.flac http://localhost:9999/1234567.flac
     ./test-loop-0.1 file://`pwd`/sounds/12.ogg file://`pwd`/sounds/1234567.ogg
     ./test-loop-0.1 file://`pwd`/sounds/12.wav file://`pwd`/sounds/1234567.wav
+    ./test-loop-0.1 file://`pwd`/sounds/12.flac file://`pwd`/sounds/1234567.flac
 
 Version
 -------
