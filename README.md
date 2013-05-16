@@ -5,9 +5,9 @@
  prevents "about-to-finish" to work.
 
  Relevant bugs:
-   - [playbin: gapless playback using "about-to-finish" doesn't work with
+   - [#698750 playbin: gapless playback using "about-to-finish" doesn't work with
       http URIs][gst-bug-698750]
-   - [Gapless using about-to-finish appears broken][gst-bug-686153]
+   - [#686153 Gapless using about-to-finish appears broken][gst-bug-686153]
 
 To reproduce:
 
