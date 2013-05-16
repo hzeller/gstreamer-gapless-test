@@ -31,7 +31,7 @@ is a file in the sounds/ directory, let's serve that.
 Playing URI with gstreamer 1.0
 ------------------------------
 
-== HTTP URI ==
+### HTTP URI ###
 
 A HTTP URI *does not work with OGG* files:
 
@@ -51,7 +51,7 @@ This *does work with WAV* files over a HTTP URI
 
     ./test-loop-1.0 http://localhost:9999/12.wav http://localhost:9999/1234567.wav
 
-== File URI ==
+### File URI ###
 
 Unlike HTTP, with file URIs, the behavior wrt. *.wav files vs. *.ogg files
 is the opposite.

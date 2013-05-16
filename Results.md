@@ -1,5 +1,7 @@
 Results
 -------
+(by Florian Will, see https://github.com/w-flo/gstreamer-gapless-test/ )
+
 The modified test program is supposed to play the given sequence in order,
 then repeat the last track until canceled. However, as the listing below
 shows, only the first track is played correctly. The second track, when played
